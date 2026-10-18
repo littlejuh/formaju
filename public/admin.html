@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Painel da Formatura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body { background: var(--bg-soft); }
+    .admin { width: min(1100px, 100% - 32px); margin: 0 auto; padding: 2.5rem 0 4rem; }
+    .admin header { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .admin h1 { font-size: 2rem; color: var(--ink); }
+    .login { max-width: 380px; margin: 15vh auto; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stats div { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 1.1rem; }
+    .stats strong { display: block; font-family: var(--serif); font-size: 2rem; color: var(--ink); }
+    .stats span { color: var(--muted); font-size: 0.85rem; }
+    .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    .tabs button { font: 600 0.92rem var(--sans); padding: 0.55rem 1rem; border-radius: 999px; border: 1.5px solid var(--line); background: var(--bg); color: var(--muted); cursor: pointer; }
+    .tabs button[aria-selected=true] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+    .table-wrap { overflow-x: auto; background: var(--bg); border: 1px solid var(--line); border-radius: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { text-align: left; padding: 0.8rem 1rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); background: var(--bg-soft); position: sticky; top: 0; }
+    tr:last-child td { border-bottom: 0; }
+    td.msg { max-width: 280px; white-space: pre-line; color: var(--muted); }
+    .pill { display: inline-block; padding: 0.15rem 0.55rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
+    .sim { background: #dff5e9; color: #13804b; }
+    .nao { background: #f2f4f8; color: #8a93a8; }
+    .x { background: none; border: 0; color: #c0392b; cursor: pointer; font: inherit; font-size: 0.85rem; }
+    .muted { color: var(--muted); }
+    tr.oculto td { opacity: 0.5; }
+    .filtro { margin-bottom: 1rem; }
+    .filtro input { font: inherit; padding: 0.6rem 0.9rem; border: 1.5px solid var(--line); border-radius: 10px; width: min(320px, 100%); }
+  </style>
+</head>
+<body>
+  <form class="card form login" id="login">
+    <h1 style="font-size:1.6rem;color:var(--ink)">🎓 Painel da formatura</h1>
+    <label>Senha
+      <input type="password" name="senha" required autofocus>
+    </label>
+    <button class="btn btn-primary">Entrar</button>
+    <p class="form-msg err" role="status"></p>
+  </form>
+
+  <div class="admin" id="painel" hidden>
+    <header>
+      <h1>Lista de presença</h1>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <a class="btn btn-outline" id="csv" href="#">⬇️ Baixar planilha (CSV)</a>
+        <a class="btn btn-outline" href="/">Ver site</a>
+        <button class="btn btn-outline" id="sair">Sair</button>
+      </div>
+    </header>
+
+    <div class="stats">
+      <div><strong data-s="confirmacoes">0</strong><span>confirmações</span></div>
+      <div><strong data-s="festa">0</strong><span>pessoas na festa</span></div>
+      <div><strong data-s="vegetarianos">0</strong><span>vegetarianos</span></div>
+      <div><strong data-s="naoVao">0</strong><span>não vão</span></div>
+      <div><strong data-s="recados">0</strong><span>recados no mural</span></div>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="presencas">Presenças</button>
+      <button role="tab" aria-selected="false" data-tab="recados">Recados</button>
+    </div>
+
+    <section data-panel="presencas">
+      <div class="filtro"><input type="search" id="busca" placeholder="Buscar por nome…"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Nome</th><th>Contato</th><th>Festa</th><th>+</th><th>Cardápio</th><th>Mensagem</th><th>Quando</th><th></th></tr></thead>
+          <tbody id="tb-presencas"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section data-panel="recados" hidden>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Nome</th><th>Recado</th><th>Quando</th><th></th></tr></thead>
+          <tbody id="tb-recados"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    let senha = sessionStorage.getItem('senha-formatura') || '';
+    let presencas = [];
+    const quando = (iso) => new Date(iso).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    const td = (text, cls) => { const c = document.createElement('td'); c.textContent = text ?? ''; if (cls) c.className = cls; return c; };
+    const pill = (v) => { const c = document.createElement('td'); c.innerHTML = v ? '<span class="pill sim">Sim</span>' : '<span class="pill nao">Não</span>'; return c; };
+    const btn = (text, fn) => { const c = document.createElement('td'); const b = document.createElement('button'); b.className = 'x'; b.textContent = text; b.onclick = fn; c.append(b); return c; };
+
+    async function api(url, opts = {}) {
+      const r = await fetch(url, { ...opts, headers: { 'Content-Type': 'application/json', 'x-admin-password': senha } });
+      if (r.status === 401) { sair(); throw new Error('Senha incorreta.'); }
+      return r.json();
+    }
+
+    function renderPresencas() {
+      const q = $('#busca').value.trim().toLowerCase();
+      const lista = presencas.filter((p) => p.nome.toLowerCase().includes(q))
+        .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+      $('#tb-presencas').replaceChildren(...lista.map((p) => {
+        const tr = document.createElement('tr');
+        tr.append(td(p.nome), td(p.contato, 'muted'), pill(p.festa), td(p.acompanhantes ? '+' + p.acompanhantes : '—'), td(p.vegetariano ? 'Vegetariano' : 'Normal', p.vegetariano ? '' : 'muted'), td(p.mensagem, 'msg'), td(quando(p.atualizadoEm), 'muted'),
+          btn('remover', async () => { if (confirm(`Remover ${p.nome}?`)) { await api('/api/admin/presencas/' + p.id, { method: 'DELETE' }); carregar(); } }));
+        return tr;
+      }));
+      if (!lista.length) { const tr = document.createElement('tr'); const c = td(q ? 'Ninguém encontrado.' : 'Ninguém confirmou ainda.', 'muted'); c.colSpan = 8; tr.append(c); $('#tb-presencas').append(tr); }
+    }
+
+    async function carregar() {
+      const [{ resumo, presencas: lista }, recados] = await Promise.all([api('/api/admin/presencas'), api('/api/admin/recados')]);
+      presencas = lista;
+      Object.assign(resumo, { naoVao: lista.filter((p) => !p.colacao && !p.festa).length, recados: recados.filter((r) => !r.oculto).length });
+      document.querySelectorAll('[data-s]').forEach((n) => (n.textContent = resumo[n.dataset.s]));
+      renderPresencas();
+      $('#tb-recados').replaceChildren(...recados.map((r) => {
+        const tr = document.createElement('tr');
+        if (r.oculto) tr.className = 'oculto';
+        const acoes = btn(r.oculto ? 'mostrar' : 'ocultar', async () => { await api('/api/admin/recados/' + r.id, { method: 'PATCH', body: JSON.stringify({ oculto: !r.oculto }) }); carregar(); });
+        const del = document.createElement('button'); del.className = 'x'; del.textContent = 'apagar'; del.style.marginLeft = '.75rem';
+        del.onclick = async () => { if (confirm('Apagar este recado para sempre?')) { await api('/api/admin/recados/' + r.id, { method: 'DELETE' }); carregar(); } };
+        acoes.append(del);
+        tr.append(td(r.nome), td(r.texto, 'msg'), td(quando(r.criadoEm), 'muted'), acoes);
+        return tr;
+      }));
+    }
+
+    async function entrar() {
+      try {
+        await carregar();
+        sessionStorage.setItem('senha-formatura', senha);
+        $('#login').hidden = true;
+        $('#painel').hidden = false;
+        $('#csv').href = '/api/admin/presencas.csv?senha=' + encodeURIComponent(senha);
+      } catch (e) {
+        $('#login .form-msg').textContent = e.message;
+      }
+    }
+    function sair() {
+      senha = '';
+      sessionStorage.removeItem('senha-formatura');
+      $('#painel').hidden = true;
+      $('#login').hidden = false;
+    }
+
+    $('#login').onsubmit = (e) => { e.preventDefault(); senha = e.target.senha.value; entrar(); };
+    $('#sair').onclick = sair;
+    $('#busca').oninput = renderPresencas;
+    document.querySelectorAll('[data-tab]').forEach((b) => (b.onclick = () => {
+      document.querySelectorAll('[data-tab]').forEach((x) => x.setAttribute('aria-selected', x === b));
+      document.querySelectorAll('[data-panel]').forEach((p) => (p.hidden = p.dataset.panel !== b.dataset.tab));
+    }));
+    if (senha) entrar();
+  </script>
+</body>
+</html>

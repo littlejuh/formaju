@@ -1,0 +1,15 @@
+{
+  "name": "formatura-si",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Landing page da formatura em Sistemas de Informação — confirmação de presença, mural de recados e galeria",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Formatura Juliana</title>
+  <meta name="description" content="Colação de grau em Sistemas de Informação: 27/02/2027 às 15h no Anfiteatro Padre Werner. Confirme sua presença!">
+  <meta property="og:title" content="Formatura Juliana 🎓">
+  <meta property="og:description" content="27/02/2027 às 15h · Anfiteatro Padre Werner. Confirme sua presença!">
+  <meta property="og:image" content="https://github.com/littlejuh.png?size=400">
+  <meta name="theme-color" content="#fcfaf9">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230b7f80'/><text x='50' y='71' font-family='Helvetica,Arial,sans-serif' font-size='58' font-weight='500' text-anchor='middle' fill='%23ffffff'>J</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/config.js"></script>
+</head>
+<body>
+  <a class="skip" href="#eventos">Pular para os eventos</a>
+
+  <header class="nav" id="topo">
+    <a href="#inicio" class="nav-brand" aria-label="Início">
+      <span class="monogram" aria-hidden="true">J</span>
+      <span class="nav-brand-text">Juliana <em>SI ’27</em></span>
+    </a>
+    <nav aria-label="Seções">
+      <a href="#eventos">Eventos</a>
+      <a href="#boas-vindas">Conquista</a>
+      <a href="#jornada">Galeria</a>
+      <a href="#inspiracoes">Inspirações</a>
+      <a href="#recados">Mural de Carinho</a>
+      <a href="https://github.com/littlejuh" class="nav-gh" target="_blank" rel="noopener" aria-label="GitHub de Juliana (@littlejuh)"><svg class="gh-icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+      <a href="#presenca" class="nav-cta">Confirmar presença</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="inicio">
+      <div class="container">
+        <p class="prompt mono" aria-hidden="true"><span class="prompt-user">juliana@si</span>:<span class="prompt-path">~</span>$ git commit -m "formatura 🎓"<span class="cursor">▍</span></p>
+        <div class="hero-id">
+          <img class="avatar" src="https://github.com/littlejuh.png?size=400" alt="Foto de Juliana" width="128" height="128">
+          <div class="hero-text">
+            <h1 data-cfg="formanda"></h1>
+            <p class="hero-sub">💻 Bacharel em <span data-cfg="curso"></span> · <span class="hero-year">2027</span></p>
+            <div class="countdown" id="countdown" aria-live="off">
+              <p class="countdown-days"><span>faltam</span> <strong data-cd="dias">--</strong> <span>dias</span></p>
+              <p class="countdown-rest"><span class="mono"><span data-cd="horas">--</span>h <span data-cd="min">--</span>m <span data-cd="seg">--</span>s</span> para a colação de grau</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a class="scroll-hint" href="#eventos" aria-label="Ir para os eventos"><span>eventos</span><span class="scroll-arrow" aria-hidden="true">↓</span></a>
+    </section>
+
+    <!-- EVENTOS -->
+    <section class="section events-section" id="eventos">
+      <div class="container">
+        <p class="kicker"><span>01 //</span> 📅 Eventos</p>
+        <h2>Quando e onde</h2>
+        <div class="events" id="eventos-lista"></div>
+      </div>
+    </section>
+
+    <!-- PRESENÇA -->
+    <section class="section rsvp-section" id="presenca">
+      <div class="container rsvp-wrap">
+        <div class="rsvp-intro">
+          <p class="kicker"><span>02 //</span> 📋 Lista de presença</p>
+          <h2>Vem comemorar comigo? 🥂</h2>
+          <p>Confirme sua presença na <strong>festa do dia 28 de fevereiro</strong> para eu organizar tudo direitinho.</p>
+          <p class="rsvp-hint">Mudou algo? É só enviar de novo com o mesmo nome.</p>
+        </div>
+
+        <div class="card rsvp-card">
+          <form class="form" id="rsvp-form" novalidate>
+            <label>Seu nome completo
+              <input name="nome" required maxlength="80" autocomplete="name" placeholder="Como devo te chamar?">
+            </label>
+            <fieldset>
+              <legend>Quantas pessoas vêm com você?</legend>
+              <div class="segmented">
+                <label><input type="radio" name="acompanhantes" value="0" checked><span>Só eu</span></label>
+                <label><input type="radio" name="acompanhantes" value="1"><span>+1</span></label>
+                <label><input type="radio" name="acompanhantes" value="2"><span>+2</span></label>
+              </div>
+            </fieldset>
+            <label class="check"><input type="checkbox" name="vegetariano"><span>Vegetariano</span><small>(opcional)</small></label>
+            <label><span>WhatsApp ou e-mail <small>(opcional)</small></span>
+              <input name="contato" maxlength="120" autocomplete="email" placeholder="Para eu avisar de novidades">
+            </label>
+            <label><span>Uma mensagem para mim <small>(opcional, só eu vejo)</small></span>
+              <textarea name="mensagem" rows="3" maxlength="500"></textarea>
+            </label>
+            <input type="text" name="site" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <button class="btn btn-primary btn-block" type="submit">Confirmar presença</button>
+            <p class="form-msg" role="status"></p>
+          </form>
+
+          <div class="rsvp-done" id="rsvp-done" hidden tabindex="-1">
+            <span class="rsvp-check" aria-hidden="true">✓</span>
+            <h3 id="rsvp-done-titulo"></h3>
+            <p id="rsvp-done-texto"></p>
+            <div class="rsvp-done-actions" id="rsvp-done-actions"></div>
+            <button class="link-btn" type="button" id="rsvp-editar">Editar minha confirmação</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOAS-VINDAS -->
+    <section class="section welcome" id="boas-vindas">
+      <div class="container narrow">
+        <p class="kicker"><span>03 //</span> 💙 Conquista &amp; agradecimentos</p>
+        <h2>Essa conquista também é sua</h2>
+        <div id="boas-vindas-texto" class="lead"></div>
+      </div>
+    </section>
+
+    <!-- JORNADA -->
+    <section class="section alt" id="jornada">
+      <div class="container">
+        <p class="kicker"><span>04 //</span> 📸 Galeria</p>
+        <h2>Momentos que ficaram</h2>
+        <div id="tcc"></div>
+        <div class="gallery" id="gallery"></div>
+      </div>
+    </section>
+
+    <!-- INSPIRAÇÕES -->
+    <section class="section" id="inspiracoes">
+      <div class="container">
+        <p class="kicker"><span>05 //</span> ✨ Inspirações</p>
+        <h2>Nos ombros de gigantes</h2>
+        <p class="section-intro">Mulheres que abriram caminho na ciência e na computação.</p>
+        <div class="inspiracoes" id="inspiracoes-lista"></div>
+        <p class="credits">Fotos: Wikimedia Commons</p>
+      </div>
+    </section>
+
+    <!-- RECADOS -->
+    <section class="section alt" id="recados">
+      <div class="container">
+        <p class="kicker"><span>06 //</span> 💬 Mural de Carinho</p>
+        <h2>Deixe seu carinho por aqui</h2>
+        <div class="mural-wrap">
+          <form class="card form" id="recado-form" novalidate>
+            <label>Seu nome
+              <input name="nome" required maxlength="60" autocomplete="name" placeholder="Quem está escrevendo?">
+            </label>
+            <label><span>Recado <small class="contador" id="recado-contador">0/600</small></span>
+              <textarea name="texto" required rows="4" maxlength="600" placeholder="Uma lembrança, um conselho, um parabéns…"></textarea>
+            </label>
+            <input type="text" name="site" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <button class="btn btn-primary btn-block" type="submit">Publicar no mural</button>
+            <p class="form-msg" role="status"></p>
+          </form>
+          <div class="mural" id="mural"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <img class="avatar avatar-sm" src="https://github.com/littlejuh.png?size=400" alt="" width="64" height="64" loading="lazy">
+    <p class="footer-thanks" id="agradecimento"></p>
+    <p class="small"><span data-cfg="formanda"></span> · <span data-cfg="curso"></span></p>
+    <a href="https://github.com/littlejuh" class="footer-gh" target="_blank" rel="noopener"><svg class="gh-icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> @littlejuh</a>
+    <p class="footer-code mono">// vibecoding pareando com Claude</p>
+    <a href="#inicio" class="footer-top">Voltar ao topo ↑</a>
+  </footer>
+
+  <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Foto ampliada">
+    <button class="lb-close" aria-label="Fechar">×</button>
+    <button class="lb-prev" aria-label="Anterior">‹</button>
+    <figure><img alt=""><figcaption></figcaption></figure>
+    <button class="lb-next" aria-label="Próxima">›</button>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
