@@ -4,7 +4,9 @@ const path = require('path');
 const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
-const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
+// No Railway, o volume anexado informa o próprio caminho; ele tem prioridade para os dados nunca irem
+// parar no disco temporário do container (que é apagado a cada deploy).
+const DATA_DIR = process.env.RAILWAY_VOLUME_MOUNT_PATH || process.env.DATA_DIR || path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
 const FOTOS_DIR = path.join(__dirname, 'public', 'fotos');
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'formatura2027';
@@ -13,8 +15,13 @@ if (!process.env.ADMIN_PASSWORD) {
   console.warn('⚠️  ADMIN_PASSWORD não definida — usando a senha padrão "formatura2027". Defina uma em produção!');
 }
 
+if (process.env.RAILWAY_ENVIRONMENT && !process.env.RAILWAY_VOLUME_MOUNT_PATH) {
+  console.warn('⚠️  Rodando no Railway SEM volume anexado: presenças e recados serão apagados a cada deploy!');
+}
+
 // ---------- "Banco" em arquivo JSON ----------
 fs.mkdirSync(DATA_DIR, { recursive: true });
+console.log(`💾 Dados em ${DB_FILE}`);
 
 function loadDb() {
   try {
