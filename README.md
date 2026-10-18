@@ -39,7 +39,7 @@ Dica: reduza as fotos para ~1600px de largura antes de subir, para o site carreg
 - Ver todas as confirmações (com contato, acompanhantes e mensagem privada)
 - Totais de pessoas na colação e na festa (contando acompanhantes)
 - Baixar a lista como planilha CSV (abre no Excel / Google Sheets)
-- Ocultar ou apagar recados do mural
+- Aprovar recados novos (eles só aparecem no mural depois de aprovados), ocultar ou apagar
 
 ## Variáveis de ambiente
 

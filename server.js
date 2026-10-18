@@ -115,7 +115,7 @@ app.post('/api/presencas', rateLimit(8, 10 * 60 * 1000), (req, res) => {
 // Mural de recados
 app.get('/api/recados', (req, res) => {
   const recados = db.recados
-    .filter((r) => !r.oculto)
+    .filter((r) => !r.oculto && !r.pendente)
     .map(({ id, nome, texto, criadoEm }) => ({ id, nome, texto, criadoEm }))
     .reverse();
   res.json(recados);
@@ -128,10 +128,10 @@ app.post('/api/recados', rateLimit(5, 10 * 60 * 1000), (req, res) => {
   if (nome.length < 2) return res.status(400).json({ erro: 'Informe seu nome.' });
   if (texto.length < 2) return res.status(400).json({ erro: 'Escreva um recado.' });
 
-  const recado = { id: crypto.randomUUID(), nome, texto, criadoEm: new Date().toISOString(), oculto: false };
-  db.recados.push(recado);
+  // Recados novos só aparecem no mural depois de aprovados no painel
+  db.recados.push({ id: crypto.randomUUID(), nome, texto, criadoEm: new Date().toISOString(), oculto: false, pendente: true });
   saveDb();
-  res.status(201).json(recado);
+  res.status(201).json({ ok: true });
 });
 
 // Galeria: lista as imagens de public/fotos (ordem alfabética)
@@ -180,7 +180,8 @@ app.get('/api/admin/recados', requireAdmin, (req, res) => res.json([...db.recado
 app.patch('/api/admin/recados/:id', requireAdmin, (req, res) => {
   const recado = db.recados.find((r) => r.id === req.params.id);
   if (!recado) return res.status(404).json({ erro: 'Recado não encontrado.' });
-  recado.oculto = Boolean(req.body.oculto);
+  if ('oculto' in req.body) recado.oculto = Boolean(req.body.oculto);
+  if ('pendente' in req.body) recado.pendente = Boolean(req.body.pendente);
   saveDb();
   res.json(recado);
 });

@@ -34,6 +34,8 @@
     .x { background: none; border: 0; color: #c0392b; cursor: pointer; font: inherit; font-size: 0.85rem; }
     .muted { color: var(--muted); }
     tr.oculto td { opacity: 0.5; }
+    tr.pendente td { background: #fff8e6; }
+    .pend { background: #ffe9b3; color: #8a5a00; }
     .filtro { margin-bottom: 1rem; }
     .filtro input { font: inherit; padding: 0.6rem 0.9rem; border: 1.5px solid var(--line); border-radius: 10px; width: min(320px, 100%); }
   </style>
@@ -64,11 +66,12 @@
       <div><strong data-s="vegetarianos">0</strong><span>vegetarianos</span></div>
       <div><strong data-s="naoVao">0</strong><span>não vão</span></div>
       <div><strong data-s="recados">0</strong><span>recados no mural</span></div>
+      <div><strong data-s="pendentes">0</strong><span>recados aguardando aprovação</span></div>
     </div>
 
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected="true" data-tab="presencas">Presenças</button>
-      <button role="tab" aria-selected="false" data-tab="recados">Recados</button>
+      <button role="tab" aria-selected="false" data-tab="recados">Recados <span id="n-pendentes"></span></button>
     </div>
 
     <section data-panel="presencas">
@@ -122,17 +125,25 @@
     async function carregar() {
       const [{ resumo, presencas: lista }, recados] = await Promise.all([api('/api/admin/presencas'), api('/api/admin/recados')]);
       presencas = lista;
-      Object.assign(resumo, { naoVao: lista.filter((p) => !p.colacao && !p.festa).length, recados: recados.filter((r) => !r.oculto).length });
+      Object.assign(resumo, { naoVao: lista.filter((p) => !p.colacao && !p.festa).length, recados: recados.filter((r) => !r.oculto && !r.pendente).length, pendentes: recados.filter((r) => r.pendente).length });
+      $('#n-pendentes').textContent = resumo.pendentes ? `(${resumo.pendentes})` : '';
       document.querySelectorAll('[data-s]').forEach((n) => (n.textContent = resumo[n.dataset.s]));
       renderPresencas();
+      // Pendentes primeiro, para não passarem despercebidos
+      recados.sort((a, b) => Boolean(b.pendente) - Boolean(a.pendente));
       $('#tb-recados').replaceChildren(...recados.map((r) => {
         const tr = document.createElement('tr');
-        if (r.oculto) tr.className = 'oculto';
-        const acoes = btn(r.oculto ? 'mostrar' : 'ocultar', async () => { await api('/api/admin/recados/' + r.id, { method: 'PATCH', body: JSON.stringify({ oculto: !r.oculto }) }); carregar(); });
+        if (r.pendente) tr.className = 'pendente';
+        else if (r.oculto) tr.className = 'oculto';
+        const patch = (body) => async () => { await api('/api/admin/recados/' + r.id, { method: 'PATCH', body: JSON.stringify(body) }); carregar(); };
+        const acoes = r.pendente ? btn('aprovar', patch({ pendente: false, oculto: false })) : btn(r.oculto ? 'mostrar' : 'ocultar', patch({ oculto: !r.oculto }));
+        if (r.pendente) acoes.firstChild.style.color = '#13804b';
         const del = document.createElement('button'); del.className = 'x'; del.textContent = 'apagar'; del.style.marginLeft = '.75rem';
         del.onclick = async () => { if (confirm('Apagar este recado para sempre?')) { await api('/api/admin/recados/' + r.id, { method: 'DELETE' }); carregar(); } };
         acoes.append(del);
-        tr.append(td(r.nome), td(r.texto, 'msg'), td(quando(r.criadoEm), 'muted'), acoes);
+        const nome = td(r.nome);
+        if (r.pendente) nome.insertAdjacentHTML('beforeend', ' <span class="pill pend">pendente</span>');
+        tr.append(nome, td(r.texto, 'msg'), td(quando(r.criadoEm), 'muted'), acoes);
         return tr;
       }));
     }

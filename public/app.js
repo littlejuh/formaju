@@ -391,11 +391,9 @@
     btn.disabled = true;
     try {
       const r = await enviar('/api/recados', { nome: f.nome.value, texto: f.texto.value, site: f.site.value });
-      $('.mural-empty', mural)?.remove();
-      if (r.id) mural.prepend(cardRecado(r, true));
       f.texto.value = '';
       atualizarContador();
-      msg(recadoForm, 'Recado publicado! Obrigada 💙', 'ok');
+      msg(recadoForm, 'Recado enviado! Ele aparece no mural assim que eu aprovar 💙', 'ok');
     } catch (err) {
       msg(recadoForm, err.message, 'err');
     } finally {
