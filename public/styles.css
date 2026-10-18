@@ -69,6 +69,17 @@ h2 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); margin-bottom: 2rem; }
   font-family: var(--serif); font-weight: 600; font-size: 1.05rem; line-height: 1;
 }
 .monogram-lg { width: 3rem; height: 3rem; font-size: 1.7rem; }
+/* capelo de formatura inclinado sobre o "J" */
+.monogram { position: relative; }
+.monogram-cap {
+  position: absolute; left: 52%; top: -0.68em; width: 1.95em; height: auto;
+  transform: translateX(-50%) rotate(-12deg); overflow: visible; pointer-events: none;
+}
+.cap-board, .cap-body { fill: var(--ink); }
+.cap-board { stroke: var(--bg); stroke-width: 1.2; stroke-linejoin: round; }
+.cap-tassel { stroke: var(--rose); stroke-width: 1.3; stroke-linecap: round; }
+.cap-tassel-end { fill: var(--rose); }
+.nav-brand { padding-top: 0.35rem; }
 
 /* ---------- NAV ---------- */
 .nav {
@@ -143,6 +154,14 @@ h2 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); margin-bottom: 2rem; }
 .avatar { flex: none; width: clamp(6rem, 18vw, 11rem); height: auto; aspect-ratio: 1; border-radius: 50%; object-fit: cover; background: var(--bg-soft); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--line), 0 0 0 5px var(--bg), 0 0 0 6px var(--accent); }
 .avatar-sm { width: 3.5rem; border-width: 2px; box-shadow: 0 0 0 1px var(--line); }
 @media (max-width: 560px) { .hero-id { flex-direction: column; align-items: flex-start; } }
+/* capelo sobre a foto redonda (escala junto com a foto) */
+.avatar-wrap { position: relative; display: inline-block; flex: none; line-height: 0; margin-top: 1.5rem; }
+.avatar-wrap-sm { margin-top: 1rem; }
+.avatar-cap {
+  position: absolute; left: 54%; top: -34%; width: 78%; height: auto;
+  transform: translateX(-50%) rotate(-12deg); overflow: visible; pointer-events: none;
+  filter: drop-shadow(0 2px 3px rgba(29, 42, 51, 0.18));
+}
 .hero-sub { font-size: clamp(1rem, 2.2vw, 1.2rem); color: var(--muted); margin: 0.5rem 0 0; }
 .hero-year { font-family: var(--mono); font-size: 0.9em; color: var(--rose); }
 

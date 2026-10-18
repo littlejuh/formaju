@@ -9,7 +9,7 @@
   <meta property="og:description" content="27/02/2027 às 15h · Anfiteatro Padre Werner. Confirme sua presença!">
   <meta property="og:image" content="https://github.com/littlejuh.png?size=400">
   <meta name="theme-color" content="#fcfaf9">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230b7f80'/><text x='50' y='71' font-family='Helvetica,Arial,sans-serif' font-size='58' font-weight='500' text-anchor='middle' fill='%23ffffff'>J</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='60' r='40' fill='%230b7f80'/><text x='50' y='80' font-family='Helvetica,Arial,sans-serif' font-size='50' font-weight='500' text-anchor='middle' fill='%23ffffff'>J</text><g transform='rotate(-12 50 22)'><path d='M30 26v10c0 4 9 7 20 7s20-3 20-7V26l-20 9z' fill='%231d2a33'/><path d='M50 4 88 20 50 36 12 20z' fill='%231d2a33'/><path d='M50 20 76 26v14' stroke='%23d98c9a' stroke-width='3' fill='none'/><circle cx='76' cy='42' r='4' fill='%23d98c9a'/></g></svg>"><circle cx='50' cy='50' r='50' fill='%230b7f80'/><text x='50' y='71' font-family='Helvetica,Arial,sans-serif' font-size='58' font-weight='500' text-anchor='middle' fill='%23ffffff'>J</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -21,7 +21,7 @@
 
   <header class="nav" id="topo">
     <a href="#inicio" class="nav-brand" aria-label="Início">
-      <span class="monogram" aria-hidden="true">J</span>
+      <span class="monogram" aria-hidden="true">J<svg class="monogram-cap" viewBox="0 0 32 24" aria-hidden="true"><path class="cap-body" d="M8 11v5c0 2 3.6 3.6 8 3.6s8-1.6 8-3.6v-5l-8 3.6z"/><path class="cap-board" d="M16 2 31 8.6 16 15.2 1 8.6z"/><path class="cap-tassel" d="M16 8.6 26.5 11v6.2" fill="none"/><circle class="cap-tassel-end" cx="26.5" cy="18.4" r="1.6"/></svg></span>
       <span class="nav-brand-text">Juliana <em>SI ’27</em></span>
     </a>
     <nav aria-label="Seções">
@@ -41,7 +41,10 @@
       <div class="container">
         <p class="prompt mono" aria-hidden="true"><span class="prompt-user">juliana@si</span>:<span class="prompt-path">~</span>$ git commit -m "formatura 🎓"<span class="cursor">▍</span></p>
         <div class="hero-id">
-          <img class="avatar" src="https://github.com/littlejuh.png?size=400" alt="Foto de Juliana" width="128" height="128">
+          <span class="avatar-wrap">
+            <img class="avatar" src="https://github.com/littlejuh.png?size=400" alt="Foto de Juliana" width="128" height="128">
+            <svg class="avatar-cap" viewBox="0 0 32 24" aria-hidden="true"><path class="cap-body" d="M8 11v5c0 2 3.6 3.6 8 3.6s8-1.6 8-3.6v-5l-8 3.6z"/><path class="cap-board" d="M16 2 31 8.6 16 15.2 1 8.6z"/><path class="cap-tassel" d="M16 8.6 26.5 11v6.2" fill="none"/><circle class="cap-tassel-end" cx="26.5" cy="18.4" r="1.6"/></svg>
+          </span>
           <div class="hero-text">
             <h1 data-cfg="formanda"></h1>
             <p class="hero-sub">💻 Bacharel em <span data-cfg="curso"></span> · <span class="hero-year">2027</span></p>
@@ -164,7 +167,10 @@
   </main>
 
   <footer class="footer">
-    <img class="avatar avatar-sm" src="https://github.com/littlejuh.png?size=400" alt="" width="64" height="64" loading="lazy">
+    <span class="avatar-wrap avatar-wrap-sm">
+      <img class="avatar avatar-sm" src="https://github.com/littlejuh.png?size=400" alt="" width="64" height="64" loading="lazy">
+      <svg class="avatar-cap" viewBox="0 0 32 24" aria-hidden="true"><path class="cap-body" d="M8 11v5c0 2 3.6 3.6 8 3.6s8-1.6 8-3.6v-5l-8 3.6z"/><path class="cap-board" d="M16 2 31 8.6 16 15.2 1 8.6z"/><path class="cap-tassel" d="M16 8.6 26.5 11v6.2" fill="none"/><circle class="cap-tassel-end" cx="26.5" cy="18.4" r="1.6"/></svg>
+    </span>
     <p class="footer-thanks" id="agradecimento"></p>
     <p class="small"><span data-cfg="formanda"></span> · <span data-cfg="curso"></span></p>
     <a href="https://github.com/littlejuh" class="footer-gh" target="_blank" rel="noopener"><svg class="gh-icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> @littlejuh</a>
