@@ -6,6 +6,8 @@ Landing page da formatura com **contagem regressiva**, **informações do evento
 - Colação de grau: **27/02/2027, 15h — Anfiteatro Padre Werner**
 - Festa: **28/02/2027**
 
+No ar em **https://formaturadaju.com.br** (painel: https://formaturadaju.com.br/admin).
+
 Feito em Node + Express, sem banco de dados externo: tudo fica salvo em `data/db.json`.
 
 ## Rodar local
@@ -58,6 +60,18 @@ O app precisa de **disco persistente** para não perder as confirmações e reca
 3. Em **Variables**, adicione `ADMIN_PASSWORD` com uma senha sua.
 4. Clique com o botão direito no serviço → **Attach Volume** → mount path: `/data`.
 5. Em **Settings → Networking → Generate Domain** para ter a URL pública.
+
+#### Domínio próprio
+
+O site usa o domínio `formaturadaju.com.br`, com DNS na Cloudflare:
+
+| Registro | Nome | Valor |
+| --- | --- | --- |
+| `CNAME` | `@` | `tjirk75w.up.railway.app` |
+| `CNAME` | `www` | `tjirk75w.up.railway.app` |
+| `TXT` | `_railway-verify` | token mostrado pelo Railway ao adicionar o domínio |
+
+No Railway, o domínio é adicionado em **Settings → Networking → Custom Domain**; o certificado HTTPS é emitido automaticamente.
 
 ### Render
 
