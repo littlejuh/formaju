@@ -28,6 +28,7 @@ window.FORMATURA = {
     mapa: 'https://maps.google.com/?q=BarCoTur+BarCo+Lazer+N%C3%A1utico+Av+Jo%C3%A3o+Goulart+551+Porto+Alegre',
     emBreve: 'Maiores informações em breve', // some sozinho quando local/horário forem preenchidos
     traje: 'Confortável',
+    aviso: '⏰ Embarque pontual às 17h30: o barco zarpa no horário e não tem como embarcar depois da partida. Chegue com uns 30 minutinhos de antecedência!',
   },
 
   // Texto de boas-vindas e agradecimentos — cada item vira um parágrafo; use **assim** para negrito e '## ' no início para subtítulo
