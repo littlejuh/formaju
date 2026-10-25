@@ -16,7 +16,7 @@
   // Recado para quem abrir o console 👩‍💻
   console.log(
     '%c🎓 Oi, dev!%c\nSe você chegou até aqui, já sabe que eu vou adorar te ver na formatura.\nCódigo e projetos: https://github.com/littlejuh',
-    'font: 600 16px sans-serif; color: #0b7f80',
+    'font: 600 16px sans-serif; color: #0050a8',
     'font: 13px monospace'
   );
 

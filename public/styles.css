@@ -1,20 +1,20 @@
 :root {
   color-scheme: light;
-  /* Off-white levemente rosado, turquesa como cor principal e rosé só em detalhes */
+  /* Off-white levemente rosado, azul da beca de SI como cor principal e rosé só em detalhes */
   --ink: #1d2a33;
   --muted: #66707a;
   --line: #e9e4e2;
   --bg: #fcfaf9;
-  --bg-soft: #f2f8f7;
+  --bg-soft: #f2f5fb;
   --surface: #ffffff;
-  --accent: #0b7f80;        /* texto, links e botões (contraste AA) */
-  --accent-dark: #0a6a6b;
-  --accent-soft: #e2f4f3;
-  --turquoise: #0f9b9a;     /* números grandes e decoração */
+  --accent: #0050a8;        /* texto, links e botões (contraste AA) */
+  --accent-dark: #003f86;
+  --accent-soft: #e5eefa;
+  --beca: #1a62c2;          /* números grandes e decoração */
   --rose: #a85d6b;
   --rose-soft: #f8eaec;
   --radius: 20px;
-  --shadow: 0 1px 2px rgba(29, 42, 51, 0.04), 0 12px 32px -18px rgba(11, 127, 128, 0.28);
+  --shadow: 0 1px 2px rgba(29, 42, 51, 0.04), 0 12px 32px -18px rgba(0, 80, 168, 0.28);
   --serif: 'Outfit', system-ui, -apple-system, sans-serif; /* títulos e números */
   --sans: 'Inter', system-ui, -apple-system, sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, monospace;
@@ -114,11 +114,11 @@ h2 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); margin-bottom: 2rem; }
   padding: clamp(6rem, 12vw, 7.5rem) 0 clamp(5rem, 10vw, 6.5rem);
 }
 .hero > .container { width: min(1080px, 100% - 32px); }
-/* brilho turquesa suave atrás do topo */
+/* brilho azul suave atrás do topo */
 .hero::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
   width: min(720px, 120vw); aspect-ratio: 1; top: -22%; right: -12%;
-  background: radial-gradient(circle, rgba(15, 155, 154, 0.16), rgba(248, 234, 236, 0.5) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(26, 98, 194, 0.14), rgba(248, 234, 236, 0.5) 45%, transparent 70%);
   filter: blur(10px);
 }
 .hero > .container { position: relative; }
@@ -126,7 +126,7 @@ h2 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); margin-bottom: 2rem; }
 .countdown p { margin: 0; }
 .countdown-days { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 clamp(0.6rem, 1.6vw, 0.9rem); font-family: var(--serif); line-height: 0.85; }
 .countdown-days strong {
-  font-family: var(--serif); font-size: clamp(3.75rem, 12vw, 6.5rem); font-weight: 300; color: var(--turquoise);
+  font-family: var(--serif); font-size: clamp(3.75rem, 12vw, 6.5rem); font-weight: 300; color: var(--beca);
   letter-spacing: -0.06em; font-variant-numeric: tabular-nums;
 }
 .countdown-days span { font-size: clamp(1.25rem, 3.5vw, 1.9rem); font-weight: 500; color: var(--ink); letter-spacing: -0.02em; }
@@ -176,7 +176,7 @@ h2 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); margin-bottom: 2rem; }
 .event p { margin: 0; }
 .event-date { display: flex; flex-direction: column; gap: 0.3rem; padding-right: clamp(1.25rem, 4vw, 2.5rem); border-right: 1px solid var(--line); }
 .event-tag { font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--rose); font-weight: 500; margin-bottom: 0.4rem !important; }
-.event-day { font-family: var(--serif); font-size: clamp(3.5rem, 8.5vw, 4.75rem); font-weight: 300; color: var(--turquoise); line-height: 0.9; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+.event-day { font-family: var(--serif); font-size: clamp(3.5rem, 8.5vw, 4.75rem); font-weight: 300; color: var(--beca); line-height: 0.9; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
 .event-month { display: flex; flex-direction: column; line-height: 1.35; }
 .event-month strong { font-size: 1.05rem; font-weight: 600; }
 .event-month span { color: var(--muted); }
