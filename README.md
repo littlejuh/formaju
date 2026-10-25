@@ -25,13 +25,14 @@ npm start          # ou: npm run dev  (reinicia ao salvar)
 | O quê | Onde |
 | --- | --- |
 | Nome, textos de boas-vindas, linha do tempo, horário/local da festa | `public/config.js` |
-| Fotos da galeria | Coloque as imagens em `public/fotos/` |
+| Fotos e vídeos da galeria | Coloque as imagens (ou vídeos `.mp4`) em `public/fotos/` |
 | Inspirações (pessoas e fotos) | `inspiracoes` em `public/config.js` + imagens em `public/inspiracoes/` |
 | PDF do TCC | `public/docs/` + item `tcc` em `public/config.js` |
 | Cores | Variáveis no topo de `public/styles.css` |
 
 **Fotos:** a ordem segue o nome do arquivo e a legenda vem do nome também.
 Ex.: `01-primeiro-dia.jpg` aparece primeiro com a legenda "primeiro dia".
+Para escolher a capa de um vídeo, coloque uma imagem com o mesmo nome (ex.: `03-ensaio.mp4` + `03-ensaio.jpg`).
 Dica: reduza as fotos para ~1600px de largura antes de subir, para o site carregar rápido.
 
 ## Painel admin (`/admin`)

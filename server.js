@@ -134,18 +134,26 @@ app.post('/api/recados', rateLimit(5, 10 * 60 * 1000), (req, res) => {
   res.status(201).json({ ok: true });
 });
 
-// Galeria: lista as imagens de public/fotos (ordem alfabética)
+// Galeria: lista as imagens e vídeos de public/fotos (ordem alfabética)
 app.get('/api/fotos', (req, res) => {
   let arquivos = [];
   try {
     arquivos = fs
       .readdirSync(FOTOS_DIR)
-      .filter((f) => /\.(jpe?g|png|webp|gif|avif)$/i.test(f))
+      .filter((f) => /\.(jpe?g|png|webp|gif|avif|mp4|webm)$/i.test(f))
       .sort((a, b) => a.localeCompare(b, 'pt-BR', { numeric: true }));
   } catch {}
+  // Imagem com o mesmo nome de um vídeo vira a capa dele (e não aparece sozinha)
+  const ehVideo = (f) => /\.(mp4|webm)$/i.test(f);
+  const nome = (f) => path.parse(f).name;
+  const capas = new Map(
+    arquivos.filter((f) => !ehVideo(f) && arquivos.some((v) => ehVideo(v) && nome(v) === nome(f))).map((f) => [nome(f), f])
+  );
   res.json(
-    arquivos.map((f) => ({
+    arquivos.filter((f) => ehVideo(f) || !capas.has(nome(f))).map((f) => ({
       src: '/fotos/' + encodeURIComponent(f),
+      video: ehVideo(f),
+      capa: ehVideo(f) && capas.has(nome(f)) ? '/fotos/' + encodeURIComponent(capas.get(nome(f))) : undefined,
       legenda: path.parse(f).name.replace(/^\d+[-_ ]*/, '').replace(/[-_]+/g, ' '),
     }))
   );

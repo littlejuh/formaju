@@ -203,13 +203,29 @@
 
   function abrir(i) {
     atual = (i + fotos.length) % fotos.length;
-    $('img', lb).src = fotos[atual].src;
-    $('img', lb).alt = fotos[atual].legenda;
+    const f = fotos[atual];
+    const img = $('img', lb);
+    const video = $('video', lb);
+    video.pause();
+    img.hidden = f.video;
+    video.hidden = !f.video;
+    if (f.video) {
+      img.removeAttribute('src');
+      video.src = f.src;
+      if (f.capa) video.poster = f.capa;
+      else video.removeAttribute('poster');
+      video.play().catch(() => {});
+    } else {
+      video.removeAttribute('src');
+      img.src = f.src;
+      img.alt = f.legenda;
+    }
     $('figcaption', lb).replaceChildren(...legendaCommit(fotos[atual].src, fotos[atual].legenda));
     lb.hidden = false;
     document.body.style.overflow = 'hidden';
   }
   function fechar() {
+    $('video', lb).pause();
     lb.hidden = true;
     document.body.style.overflow = '';
   }
@@ -243,7 +259,12 @@
       gallery.append(
         ...fotos.map((f, i) => {
           const fig = el('figure', { tabindex: '0', class: 'reveal' }, [
-            el('img', { src: f.src, alt: f.legenda, loading: 'lazy' }),
+            f.video
+              ? f.capa
+                ? el('img', { src: f.capa, alt: f.legenda, loading: 'lazy' })
+                : el('video', { src: f.src + '#t=0.1', muted: '', playsinline: '', preload: 'metadata', 'aria-label': f.legenda })
+              : el('img', { src: f.src, alt: f.legenda, loading: 'lazy' }),
+            f.video && el('span', { class: 'play-badge', 'aria-hidden': 'true', text: '▶' }),
             f.legenda && el('figcaption', {}, legendaCommit(f.src, f.legenda)),
           ]);
           fig.onclick = () => abrir(i);
