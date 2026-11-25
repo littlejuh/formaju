@@ -24,9 +24,28 @@
   $$('[data-cfg]').forEach((n) => (n.textContent = cfg[n.dataset.cfg] || ''));
   // Parágrafo com **negrito** (monta os nós na mão, sem innerHTML)
   const comNegrito = (t) => t.split(/\*\*(.+?)\*\*/g).map((parte, i) => (i % 2 ? el('strong', { text: parte }) : parte)).filter(Boolean);
-  $('#boas-vindas-texto').append(
-    ...cfg.boasVindas.map((t) => (t.startsWith('## ') ? el('h3', { text: t.slice(3) }) : el('p', {}, comNegrito(t))))
-  );
+  const paragrafos = (lista) => (lista || []).map((t) => el('p', {}, comNegrito(t)));
+  if (cfg.conquista) {
+    const c = cfg.conquista;
+    const trecho = el('div', { class: 'conquista-trecho' }, paragrafos(c.trecho));
+    const historia = $('#conquista-historia');
+    const mais = $('#conquista-mais');
+    $('#conquista-abertura').append(...paragrafos([c.saudacao]), trecho);
+    historia.append(...paragrafos(c.historia));
+    $('#conquista-agradecimentos').append(el('h3', { text: c.agradecimentosTitulo }), ...paragrafos(c.agradecimentos));
+    $('#conquista-final').append(...paragrafos(c.final));
+    const minutos = Math.max(1, Math.round((c.historia || []).join(' ').split(/\s+/).length / 200));
+    mais.textContent = `Ler a história completa · ${minutos} min`;
+    mais.onclick = () => {
+      const abrir = historia.hidden;
+      historia.hidden = !abrir;
+      trecho.hidden = abrir;
+      mais.setAttribute('aria-expanded', String(abrir));
+      mais.textContent = abrir ? 'Mostrar menos' : `Ler a história completa · ${minutos} min`;
+      // ao recolher, o texto de cima encolhe: volta para o começo da seção em vez de perder o lugar
+      if (!abrir) $('#boas-vindas').scrollIntoView({ behavior: 'instant' });
+    };
+  }
   $('#agradecimento').textContent = cfg.agradecimento;
 
   // ---------- Inspirações ----------
@@ -420,6 +439,7 @@
   }
 
   if (cfg.ensaio) {
+    $('#ensaio-titulo').textContent = cfg.ensaio.titulo;
     Promise.all(['/api/fotos', '/api/ensaio'].map((u) => fetch(u).then((r) => r.json()).catch(() => [])))
       .then(([jornada, lista]) => {
         if (!jornada.length && !lista.length) return;
@@ -447,7 +467,6 @@
           $('#ensaio-todas').textContent = `Ver as ${o.fotos.length} juntas`;
           montarFaixa(o.fotos);
         }
-        $('#ensaio-titulo').textContent = cfg.ensaio.titulo;
         $('#ensaio-texto').textContent = cfg.ensaio.texto || '';
         $('#ensaio-albuns').append(...chips);
         $('#ensaio-todas').onclick = () => abrirAlbum(escolhida === opcoes[0] ? cfg.ensaio.titulo : escolhida.nome);
