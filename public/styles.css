@@ -62,25 +62,6 @@ h2 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); margin-bottom: 2rem; }
 }
 .kicker span { color: var(--rose); }
 
-.monogram {
-  display: inline-grid; place-items: center; flex: none;
-  width: 2rem; height: 2rem; border-radius: 50%;
-  background: var(--accent); color: var(--bg);
-  font-family: var(--serif); font-weight: 600; font-size: 1.05rem; line-height: 1;
-}
-.monogram-lg { width: 3rem; height: 3rem; font-size: 1.7rem; }
-/* capelo de formatura inclinado sobre o "J" */
-.monogram { position: relative; }
-.monogram-cap {
-  position: absolute; left: 52%; top: -0.68em; width: 1.95em; height: auto;
-  transform: translateX(-50%) rotate(-12deg); overflow: visible; pointer-events: none;
-}
-.cap-board, .cap-body { fill: var(--ink); }
-.cap-board { stroke: var(--bg); stroke-width: 1.2; stroke-linejoin: round; }
-.cap-tassel { stroke: var(--rose); stroke-width: 1.3; stroke-linecap: round; }
-.cap-tassel-end { fill: var(--rose); }
-.nav-brand { padding-top: 0.35rem; }
-
 /* ---------- NAV ---------- */
 .nav {
   position: fixed; inset: 0 0 auto 0; z-index: 50;
@@ -109,7 +90,7 @@ h2 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); margin-bottom: 2rem; }
 
 /* ---------- HERO ---------- */
 .hero {
-  position: relative; overflow: hidden; isolation: isolate;
+  position: relative; overflow: hidden; isolation: isolate; background: var(--bg);
   min-height: 100svh; display: flex; flex-direction: column; justify-content: center;
   padding: clamp(6rem, 12vw, 7.5rem) 0 clamp(5rem, 10vw, 6.5rem);
 }
@@ -152,18 +133,41 @@ h2 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); margin-bottom: 2rem; }
 .events-section { border-top: 1px solid var(--line); }
 .hero-text { min-width: 0; flex: 1; }
 .avatar { flex: none; width: clamp(6rem, 18vw, 11rem); height: auto; aspect-ratio: 1; border-radius: 50%; object-fit: cover; background: var(--bg-soft); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--line), 0 0 0 5px var(--bg), 0 0 0 6px var(--accent); }
-.avatar-sm { width: 3.5rem; border-width: 2px; box-shadow: 0 0 0 1px var(--line); }
+.nav-avatar { flex: none; width: 2.5rem; height: 2.5rem; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--accent); }
+.avatar-sm { width: 7rem; border-width: 2px; box-shadow: 0 0 0 1px var(--line); }
 @media (max-width: 560px) { .hero-id { flex-direction: column; align-items: flex-start; } }
-/* capelo sobre a foto redonda (escala junto com a foto) */
-.avatar-wrap { position: relative; display: inline-block; flex: none; line-height: 0; margin-top: 1.5rem; }
-.avatar-wrap-sm { margin-top: 1rem; }
-.avatar-cap {
-  position: absolute; left: 54%; top: -34%; width: 78%; height: auto;
-  transform: translateX(-50%) rotate(-12deg); overflow: visible; pointer-events: none;
-  filter: drop-shadow(0 2px 3px rgba(29, 42, 51, 0.18));
-}
 .hero-sub { font-size: clamp(1rem, 2.2vw, 1.2rem); color: var(--muted); margin: 0.5rem 0 0; }
-.hero-year { font-family: var(--mono); font-size: 0.9em; color: var(--rose); }
+.hero-year { white-space: nowrap; font-family: var(--mono); font-size: 0.9em; color: var(--rose); }
+
+/* Foto do topo: o fundo branco some no fundo da página (multiply) e as bordas se desfazem (mask) */
+.hero-foto {
+  position: absolute; z-index: -1; right: 0; bottom: 0; width: min(72vw, 1500px); pointer-events: none;
+  mix-blend-mode: multiply;
+}
+.hero-foto img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover;
+  -webkit-mask: linear-gradient(to right, transparent, #000 28%), linear-gradient(to bottom, transparent, #000 22%);
+  -webkit-mask-composite: source-in;
+  mask: linear-gradient(to right, transparent, #000 28%), linear-gradient(to bottom, transparent, #000 22%);
+  mask-composite: intersect;
+}
+@media (min-width: 861px) {
+  .hero-text { flex: 0 1 28rem; }
+  .hero .hero-sub { font-size: 1rem; }
+  .hero-foto { max-width: calc((100svh - 70px) * 1.5); } /* em telas largas e baixas, não passa da barra do topo */
+}
+@media (min-width: 861px) and (max-width: 1180px) {
+  .hero-text { flex-basis: 40%; }
+  .hero-foto { width: 68vw; }
+}
+@media (max-width: 860px) {
+  .hero { justify-content: flex-start; padding-bottom: 0; }
+  /* aproxima no capelo, no rosto e nas mãos */
+  .hero-foto { position: relative; right: auto; order: 2; width: 110%; max-width: none; margin: auto 0 0 -14%; }
+  .hero .scroll-hint { color: #fff; }
+}
+@media (max-width: 560px) { .hero-foto { width: 140%; margin-left: -28%; } }
+/* tela baixa: a foto não cobre o texto */
+@media (max-width: 860px) and (max-height: 560px) { .hero-foto { margin-top: 1.5rem; } }
 
 /* ---------- EVENTOS ---------- */
 .events { display: grid; gap: 1rem; }
@@ -225,6 +229,21 @@ h2 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); margin-bottom: 2rem; }
 .lead p:last-child { margin-bottom: 0; }
 .lead strong { font-weight: 600; color: var(--ink); }
 .lead h3 { font-size: clamp(1.25rem, 2.6vw, 1.5rem); margin: clamp(2.5rem, 5vw, 3.25rem) 0 1.25rem; padding-top: clamp(2rem, 4vw, 2.5rem); border-top: 1px solid var(--line); }
+
+/* foto ao lado do texto, acompanhando a leitura */
+.conquista { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 640px); justify-content: space-between; gap: 0 clamp(2rem, 5vw, 4rem); align-items: start; grid-template-rows: auto 1fr; }
+.conquista-foto { grid-row: 1 / 3; position: sticky; top: 92px; }
+.conquista-titulo, .conquista-texto { grid-column: 2; }
+.conquista-foto img, .rsvp-foto img { width: 100%; border-radius: var(--radius); box-shadow: var(--shadow); object-fit: cover; }
+.conquista-foto img { aspect-ratio: 2 / 3; max-height: calc(100svh - 124px); object-position: 50% 30%; height: auto; }
+@media (max-width: 900px) {
+  .conquista { grid-template-columns: minmax(0, 680px); justify-content: center; }
+  .conquista-titulo, .conquista-texto { grid-column: 1; }
+  .conquista-titulo { grid-row: 1; }
+  .conquista-foto { grid-row: 2; position: static; margin-bottom: 2rem; }
+  .conquista-texto { grid-row: 3; }
+  .conquista-foto img { aspect-ratio: 4 / 5; max-height: 80svh; }
+}
 
 /* ---------- GALLERY ---------- */
 .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 0.75rem; }
@@ -404,11 +423,28 @@ h2 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); margin-bottom: 2rem; }
 
 /* ---------- RSVP ---------- */
 .rsvp-section { background: var(--bg-soft); }
-.rsvp-section h2 { margin-bottom: 1rem; }
+.rsvp-section h2 { margin-bottom: 1rem; text-wrap: balance; }
 .rsvp-wrap { display: grid; grid-template-columns: 1fr 1.05fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
 .rsvp-intro > p { color: var(--muted); font-size: 1.08rem; margin: 0 0 0.75rem; }
 .rsvp-intro strong { color: var(--ink); }
 .rsvp-intro .rsvp-hint { font-size: 0.9rem; }
+.rsvp-foto { margin: clamp(1.5rem, 3vw, 2.25rem) 0 0; }
+.rsvp-foto img { aspect-ratio: 3 / 2; height: auto; }
+.rsvp-foto figcaption { margin-bottom: 0.6rem; font-size: 0.8rem; color: var(--muted); }
+@media (min-width: 861px) {
+  /* foto e cartão terminam sempre na mesma linha: a foto ocupa o que sobra da coluna */
+  .rsvp-wrap { align-items: stretch; }
+  .rsvp-intro { display: flex; flex-direction: column; }
+  .rsvp-foto { flex: 1; display: flex; flex-direction: column; }
+  .rsvp-foto .rsvp-pic { position: relative; flex: 1; min-height: 260px; }
+  .rsvp-foto img { position: absolute; inset: 0; height: 100%; aspect-ratio: auto; object-position: 50% 75%; }
+  /* se a coluna da foto for a mais alta, quem cresce é o campo de mensagem (ou o aviso fica centralizado) */
+  .rsvp-card { display: grid; }
+  .rsvp-card .form { grid-template-rows: repeat(4, auto) 1fr; }
+  .rsvp-card .form label:has(textarea) { grid-template-rows: auto 1fr; }
+  .rsvp-done { align-content: center; }
+}
+@media (max-width: 860px) { .rsvp-foto img { aspect-ratio: 16 / 9; object-position: 50% 70%; } }
 .rsvp-done { padding: clamp(1.5rem, 5vw, 2.5rem); text-align: center; display: grid; justify-items: center; gap: 0.6rem; }
 .rsvp-done:focus { outline: none; }
 .rsvp-check { display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
