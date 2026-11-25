@@ -85,7 +85,13 @@ const app = express();
 app.set('trust proxy', 1);
 app.use(express.json({ limit: '20kb' }));
 // Fotos do ensaio não mudam depois de geradas: o navegador pode guardar por bastante tempo
-app.use('/ensaio', express.static(ENSAIO_DIR, { maxAge: '30d', setHeaders: (res, f) => f.endsWith('.json') && res.setHeader('Cache-Control', 'no-cache') }));
+app.use('/ensaio', express.static(ENSAIO_DIR, {
+  maxAge: '30d',
+  setHeaders: (res, f) => {
+    if (f.endsWith('.json')) res.setHeader('Cache-Control', 'no-cache');
+    if (f.endsWith('.avif')) res.setHeader('Content-Type', 'image/avif'); // o Express 4 não conhece a extensão
+  },
+}));
 app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
 
 // Confirmação de presença
