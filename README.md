@@ -25,7 +25,7 @@ npm start          # ou: npm run dev  (reinicia ao salvar)
 | O quê | Onde |
 | --- | --- |
 | Nome, textos de boas-vindas, linha do tempo, horário/local da festa | `public/config.js` |
-| Fotos e vídeos da galeria | Coloque as imagens (ou vídeos `.mp4`) em `public/fotos/` |
+| Fotos e vídeos da jornada (abrem o carrossel) | Coloque as imagens (ou vídeos `.mp4`) em `public/fotos/` |
 | Inspirações (pessoas e fotos) | `inspiracoes` em `public/config.js` + imagens em `public/inspiracoes/` |
 | PDF do TCC | `public/docs/` + item `tcc` em `public/config.js` |
 | Cores | Variáveis no topo de `public/styles.css` |

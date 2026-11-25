@@ -196,10 +196,8 @@
     return h.toString(16).padStart(8, '0').slice(0, 7);
   };
   const legendaCommit = (src, legenda) => [el('code', { text: hashCommit(src) }), ' ' + (legenda || '')];
-  const gallery = $('#gallery');
   const lb = $('#lightbox');
-  let fotos = [];
-  let aberta = []; // lista que está na tela cheia (galeria ou ensaio)
+  let aberta = []; // lista que está na tela cheia
   let atual = 0;
   let focoAntes = null;
 
@@ -214,6 +212,26 @@
       el('source', { type: 'image/avif', srcset: srcset(f), sizes }),
       el('img', { src: reserva(f), alt: f.legenda, width: f.w, height: f.h, decoding: 'async', ...attrs }),
     ]);
+
+  // Miniatura de qualquer item: foto do ensaio, foto da jornada ou vídeo (com capa)
+  function miniatura(f, sizes, attrs) {
+    if (f.id) return [picture(f, sizes, attrs)];
+    const capa = f.video ? f.capa : f.src;
+    const m = capa
+      ? el('img', { src: capa, alt: f.legenda, decoding: 'async', ...attrs })
+      : el('video', { src: f.src + '#t=0.1', muted: '', playsinline: '', preload: 'metadata' });
+    // as dimensões dessas fotos só são conhecidas quando carregam
+    m.addEventListener(capa ? 'load' : 'loadedmetadata', () => {
+      f.w = m.naturalWidth || m.videoWidth;
+      f.h = m.naturalHeight || m.videoHeight;
+      m.closest('button')?.style.setProperty('--prop', f.w / f.h);
+    });
+    return [
+      m,
+      f.video && el('span', { class: 'play-badge', 'aria-hidden': 'true', text: '▶' }),
+      el('span', { class: 'mini-legenda' }, legendaCommit(f.src, f.legenda)),
+    ];
+  }
 
   // Enquanto uma janela está aberta, o que fica atrás não rola nem recebe foco
   function atualizarFundo() {
@@ -312,42 +330,7 @@
     toque = null;
   }, { passive: true });
 
-  fetch('/api/fotos')
-    .then((r) => r.json())
-    .then((lista) => {
-      fotos = lista;
-      if (!fotos.length) {
-        const exemplos = ['primeiro dia', 'laboratório', 'turma', 'apresentação do TCC', 'hackathon', 'café com a galera'];
-        gallery.append(
-          ...exemplos.map((t) =>
-            el('figure', { class: 'placeholder' }, [
-              el('span', {}, legendaCommit(t, t)),
-            ])
-          )
-        );
-        gallery.after(el('p', { class: 'gallery-empty-note', text: '📷 Fotos chegando no próximo commit.' }));
-        return;
-      }
-      gallery.append(
-        ...fotos.map((f, i) => {
-          const fig = el('figure', { tabindex: '0', class: 'reveal' }, [
-            f.video
-              ? f.capa
-                ? el('img', { src: f.capa, alt: f.legenda, loading: 'lazy' })
-                : el('video', { src: f.src + '#t=0.1', muted: '', playsinline: '', preload: 'metadata', 'aria-label': f.legenda })
-              : el('img', { src: f.src, alt: f.legenda, loading: 'lazy' }),
-            f.video && el('span', { class: 'play-badge', 'aria-hidden': 'true', text: '▶' }),
-            f.legenda && el('figcaption', {}, legendaCommit(f.src, f.legenda)),
-          ]);
-          fig.onclick = () => abrir(i, fotos);
-          fig.onkeydown = (e) => e.key === 'Enter' && abrir(i, fotos);
-          return fig;
-        })
-      );
-      observar();
-    });
-
-  // ---------- Ensaio (carrossel + álbum) ----------
+  // ---------- Carrossel (jornada + ensaio) e álbum em tela cheia ----------
   const faixa = $('#ensaio-faixa');
   const barra = $('#ensaio-barra');
   const album = $('#album');
@@ -371,9 +354,9 @@
     $('#album-titulo').textContent = `${nome} (${ensaio.length})`;
     $('#album-grade').replaceChildren(
       ...ensaio.map((f, i) => {
-        const b = el('button', { type: 'button', 'aria-label': `Ampliar foto ${i + 1}: ${f.legenda}`, style: `--prop:${f.w / f.h};background:${f.cor}` }, [
-          picture(f, `${Math.round(260 * f.w / f.h)}px`, { loading: 'lazy' }),
-        ]);
+        const b = el('button', { type: 'button', 'aria-label': `${f.video ? 'Ver vídeo' : 'Ampliar foto'} ${i + 1}: ${f.legenda}`, style: `--prop:${f.w / f.h};background:${f.cor}` },
+          miniatura(f, `${Math.round(260 * f.w / f.h)}px`, { loading: 'lazy' })
+        );
         b.onclick = () => abrir(i, ensaio);
         return b;
       })
@@ -423,10 +406,10 @@
     ensaio = lista;
     faixa.replaceChildren(
       ...lista.map((f, i) => {
-        const b = el('button', { type: 'button', 'aria-label': `Ampliar foto ${i + 1}: ${f.legenda}`, style: `aspect-ratio:${f.w}/${f.h};background:${f.cor}` }, [
+        const b = el('button', { type: 'button', 'aria-label': `${f.video ? 'Ver vídeo' : 'Ampliar foto'} ${i + 1}: ${f.legenda}`, style: `--prop:${f.w / f.h};background:${f.cor}` },
           // mesma conta de --faixa-h no CSS (o atributo sizes não aceita variáveis)
-          picture(f, `calc(min(520px, (100vw - 32px) / 1.5, 68vh) * ${(f.w / f.h).toFixed(4)})`, { loading: 'lazy', draggable: 'false' }),
-        ]);
+          miniatura(f, `calc(min(520px, (100vw - 32px) / 1.5, 68vh) * ${(f.w / f.h).toFixed(4)})`, { loading: 'lazy', draggable: 'false' })
+        );
         b.onclick = () => abrir(i, ensaio);
         return b;
       })
@@ -437,17 +420,18 @@
   }
 
   if (cfg.ensaio) {
-    fetch('/api/ensaio')
-      .then((r) => r.json())
-      .then((lista) => {
-        if (!lista.length) return;
+    Promise.all(['/api/fotos', '/api/ensaio'].map((u) => fetch(u).then((r) => r.json()).catch(() => [])))
+      .then(([jornada, lista]) => {
+        if (!jornada.length && !lista.length) return;
+        jornada.forEach((f) => Object.assign(f, { w: 1, h: 1, cor: 'var(--line)' }));
         const albuns = (cfg.ensaio.albuns || []).map((a) => ({ nome: a.nome, tem: noIntervalo(a.fotos) }));
         const todas = lista.map((f) => {
           const n = Number(f.id.slice(-3));
           return { ...f, n, video: false, src: reserva(f), legenda: albuns.find((a) => a.tem(n))?.nome || cfg.ensaio.titulo };
         });
         const opcoes = [
-          { nome: 'Todas', fotos: todas },
+          { nome: 'Todas', fotos: [...jornada, ...todas] },
+          { nome: cfg.ensaio.jornada || 'A jornada', fotos: jornada },
           ...albuns.map((a) => ({ nome: a.nome, fotos: todas.filter((f) => a.tem(f.n)).map((f) => ({ ...f, legenda: a.nome })) })),
         ].filter((o) => o.fotos.length);
 

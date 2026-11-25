@@ -72,8 +72,9 @@ window.FORMATURA = {
   // Carrossel do ensaio (fotos geradas com "npm run ensaio"). Em cada álbum, 'fotos' são os números finais
   // dos arquivos: '612-648' é um intervalo e '701' uma foto só. Uma foto pode estar em mais de um álbum.
   ensaio: {
-    titulo: 'Ensaio de formatura',
-    texto: 'A beca, as luzes e as pessoas que fizeram essa história comigo.',
+    titulo: 'Da caloura à formanda',
+    texto: 'Onde tudo começou, a beca, as luzes e as pessoas que fizeram essa história comigo.',
+    jornada: 'A jornada', // nome do álbum com as fotos e vídeos de public/fotos/ (abrem o carrossel)
     albuns: [
       { nome: 'De beca', fotos: '612-648' },
       { nome: 'Com quem eu amo', fotos: '649-675, 687-694, 699-700, 702-738' },
