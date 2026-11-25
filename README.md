@@ -35,6 +35,20 @@ Ex.: `01-primeiro-dia.jpg` aparece primeiro com a legenda "primeiro dia".
 Para escolher a capa de um vídeo, coloque uma imagem com o mesmo nome (ex.: `03-ensaio.mp4` + `03-ensaio.jpg`).
 Dica: reduza as fotos para ~1600px de largura antes de subir, para o site carregar rápido.
 
+### Carrossel do ensaio
+
+As fotos do ensaio ficam em `public/ensaio/` e são geradas a partir dos originais (o segundo termo filtra pelo começo do nome):
+
+```bash
+npm install
+npm run ensaio -- ~/Downloads ST208321
+```
+
+O comando cria versões AVIF de 720 a 3840px (o navegador baixa só a que a tela precisa), um JPEG de reserva e uma
+cópia idêntica dos originais em `public/ensaio/originais/`, usada no botão "Baixar original".
+Os originais (~1,1 GB) **não vão para o git**; sem eles no servidor, o botão simplesmente não aparece.
+Título, texto e álbuns ficam em `ensaio`, no `public/config.js`.
+
 ## Painel admin (`/admin`)
 
 - Ver todas as confirmações (com contato, acompanhantes e mensagem privada)

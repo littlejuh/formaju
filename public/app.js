@@ -199,17 +199,52 @@
   const gallery = $('#gallery');
   const lb = $('#lightbox');
   let fotos = [];
+  let aberta = []; // lista que está na tela cheia (galeria ou ensaio)
   let atual = 0;
+  let focoAntes = null;
 
-  function abrir(i) {
-    atual = (i + fotos.length) % fotos.length;
-    const f = fotos[atual];
+  // Foto do ensaio: o navegador escolhe entre as versões AVIF; a reserva é um JPEG
+  const LADOS = [720, 1440, 2560, 3840];
+  const srcset = (f) =>
+    LADOS.map((l) => `/ensaio/${l}/${f.id}.avif ${Math.round(f.w * Math.min(1, l / Math.max(f.w, f.h)))}w`).join(', ');
+  const reserva = (f) => `/ensaio/reserva/${f.id}.jpg`;
+  const tamanhoNaTela = (f) => `min(92vw, calc((100vh - 140px) * ${(f.w / f.h).toFixed(4)}))`;
+  const picture = (f, sizes, attrs) =>
+    el('picture', {}, [
+      el('source', { type: 'image/avif', srcset: srcset(f), sizes }),
+      el('img', { src: reserva(f), alt: f.legenda, width: f.w, height: f.h, decoding: 'async', ...attrs }),
+    ]);
+
+  // Enquanto uma janela está aberta, o que fica atrás não rola nem recebe foco
+  function atualizarFundo() {
+    const album = $('#album');
+    const temJanela = !lb.hidden || !album.hidden;
+    document.body.style.overflow = temJanela ? 'hidden' : '';
+    $$('body > header, body > main, body > footer').forEach((n) => (n.inert = temJanela));
+    album.inert = !lb.hidden;
+  }
+
+  // Traz as vizinhas antes, na resolução que esta tela vai pedir
+  function adiantar(f) {
+    if (!f?.id) return;
+    picture(f, tamanhoNaTela(f), {});
+  }
+
+  function abrir(i, lista = aberta) {
+    if (lb.hidden) focoAntes = document.activeElement;
+    aberta = lista;
+    atual = (i + lista.length) % lista.length;
+    const f = lista[atual];
+    const pic = $('picture', lb);
     const img = $('img', lb);
+    const fonte = $('source', lb);
     const video = $('video', lb);
+    const original = $('.lb-original', lb);
     video.pause();
-    img.hidden = f.video;
+    pic.hidden = f.video;
     video.hidden = !f.video;
     if (f.video) {
+      fonte.removeAttribute('srcset');
       img.removeAttribute('src');
       video.src = f.src;
       if (f.capa) video.poster = f.capa;
@@ -217,28 +252,65 @@
       video.play().catch(() => {});
     } else {
       video.removeAttribute('src');
+      if (f.id) {
+        fonte.sizes = tamanhoNaTela(f);
+        fonte.srcset = srcset(f);
+        img.width = f.w;
+        img.height = f.h;
+        img.style.setProperty('--lb-largura', tamanhoNaTela(f));
+        img.style.background = f.cor;
+        adiantar(lista[(atual + 1) % lista.length]);
+        adiantar(lista[(atual - 1 + lista.length) % lista.length]);
+      } else {
+        fonte.removeAttribute('srcset');
+        img.removeAttribute('width');
+        img.removeAttribute('height');
+        img.removeAttribute('style');
+      }
+      img.classList.toggle('lb-ensaio', Boolean(f.id));
       img.src = f.src;
       img.alt = f.legenda;
     }
-    $('figcaption', lb).replaceChildren(...legendaCommit(fotos[atual].src, fotos[atual].legenda));
+    original.hidden = !f.original;
+    if (f.original) original.href = `/ensaio/originais/${f.id}.jpg`;
+    $('.lb-contador', lb).textContent = `${atual + 1} / ${lista.length}`;
+    $('figcaption', lb).replaceChildren(...legendaCommit(f.src, f.legenda));
+    const abrindo = lb.hidden;
     lb.hidden = false;
-    document.body.style.overflow = 'hidden';
+    atualizarFundo();
+    if (abrindo) $('.lb-close', lb).focus();
   }
   function fechar() {
     $('video', lb).pause();
     lb.hidden = true;
-    document.body.style.overflow = '';
+    atualizarFundo();
+    focoAntes?.focus();
   }
   $('.lb-close', lb).onclick = fechar;
   $('.lb-prev', lb).onclick = () => abrir(atual - 1);
   $('.lb-next', lb).onclick = () => abrir(atual + 1);
   lb.addEventListener('click', (e) => e.target === lb && fechar());
   document.addEventListener('keydown', (e) => {
-    if (lb.hidden) return;
+    if (lb.hidden) {
+      if (e.key === 'Escape' && !$('#album').hidden) fecharAlbum();
+      return;
+    }
     if (e.key === 'Escape') fechar();
     if (e.key === 'ArrowLeft') abrir(atual - 1);
     if (e.key === 'ArrowRight') abrir(atual + 1);
   });
+  // Arrastar com o dedo troca de foto (com dois dedos é zoom: não mexe)
+  let toque = null;
+  lb.addEventListener('touchstart', (e) => {
+    toque = e.touches.length === 1 && e.target.tagName !== 'VIDEO' ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+  }, { passive: true });
+  lb.addEventListener('touchend', (e) => {
+    if (!toque || e.touches.length || (window.visualViewport?.scale || 1) > 1.05) return;
+    const dx = e.changedTouches[0].clientX - toque.x;
+    const dy = e.changedTouches[0].clientY - toque.y;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) abrir(atual + (dx < 0 ? 1 : -1));
+    toque = null;
+  }, { passive: true });
 
   fetch('/api/fotos')
     .then((r) => r.json())
@@ -267,13 +339,138 @@
             f.video && el('span', { class: 'play-badge', 'aria-hidden': 'true', text: '▶' }),
             f.legenda && el('figcaption', {}, legendaCommit(f.src, f.legenda)),
           ]);
-          fig.onclick = () => abrir(i);
-          fig.onkeydown = (e) => e.key === 'Enter' && abrir(i);
+          fig.onclick = () => abrir(i, fotos);
+          fig.onkeydown = (e) => e.key === 'Enter' && abrir(i, fotos);
           return fig;
         })
       );
       observar();
     });
+
+  // ---------- Ensaio (carrossel + álbum) ----------
+  const faixa = $('#ensaio-faixa');
+  const barra = $('#ensaio-barra');
+  const album = $('#album');
+  let ensaio = []; // fotos do álbum selecionado
+  let focoAlbum = null;
+
+  // '612-648, 701' → função que diz se o número final do arquivo está na lista
+  const noIntervalo = (texto) => {
+    const partes = texto.split(',').map((p) => p.trim().split('-').map(Number));
+    return (n) => partes.some(([de, ate = de]) => n >= de && n <= ate);
+  };
+
+  function fecharAlbum() {
+    album.hidden = true;
+    $('#album-grade').replaceChildren();
+    atualizarFundo();
+    focoAlbum?.focus();
+  }
+  function abrirAlbum(nome) {
+    focoAlbum = document.activeElement;
+    $('#album-titulo').textContent = `${nome} (${ensaio.length})`;
+    $('#album-grade').replaceChildren(
+      ...ensaio.map((f, i) => {
+        const b = el('button', { type: 'button', 'aria-label': `Ampliar foto ${i + 1}: ${f.legenda}`, style: `--prop:${f.w / f.h};background:${f.cor}` }, [
+          picture(f, `${Math.round(260 * f.w / f.h)}px`, { loading: 'lazy' }),
+        ]);
+        b.onclick = () => abrir(i, ensaio);
+        return b;
+      })
+    );
+    album.hidden = false;
+    album.scrollTop = 0;
+    atualizarFundo();
+    $('#album-titulo').focus();
+  }
+  $('#album-fechar').onclick = fecharAlbum;
+
+  // Foto mais à esquerda entre as visíveis (no fim da faixa, a última)
+  const inicioDe = (n) => n.offsetLeft - parseFloat(getComputedStyle(faixa).paddingLeft);
+  function posicao() {
+    if (faixa.scrollLeft + faixa.clientWidth >= faixa.scrollWidth - 4) return ensaio.length - 1;
+    const recuo = parseFloat(getComputedStyle(faixa).paddingLeft);
+    const i = [...faixa.children].findIndex((n) => n.offsetLeft - recuo + n.offsetWidth / 2 > faixa.scrollLeft);
+    return Math.max(0, i);
+  }
+  function marcarPosicao() {
+    const i = posicao();
+    barra.value = i;
+    barra.setAttribute('aria-valuetext', `Foto ${i + 1} de ${ensaio.length}`);
+    barra.style.setProperty('--p', `${ensaio.length > 1 ? (i / (ensaio.length - 1)) * 100 : 100}%`);
+    $('#ensaio-contador').textContent = `${i + 1} / ${ensaio.length}`;
+    $('#ensaio-prev').disabled = faixa.scrollLeft <= 4;
+    $('#ensaio-next').disabled = faixa.scrollLeft + faixa.clientWidth >= faixa.scrollWidth - 4;
+  }
+  const suave = () => (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth');
+  const andar = (dir) => faixa.scrollBy({ left: dir * faixa.clientWidth * 0.8, behavior: suave() });
+  $('#ensaio-prev').onclick = () => andar(-1);
+  $('#ensaio-next').onclick = () => andar(1);
+  barra.oninput = () => {
+    const i = Number(barra.value);
+    const alvoScroll = i >= ensaio.length - 1 ? faixa.scrollWidth : inicioDe(faixa.children[i]);
+    faixa.scrollTo({ left: alvoScroll, behavior: 'instant' });
+  };
+  let marcando = false;
+  faixa.addEventListener('scroll', () => {
+    if (marcando) return;
+    marcando = true;
+    requestAnimationFrame(() => { marcando = false; marcarPosicao(); });
+  }, { passive: true });
+  window.addEventListener('resize', () => ensaio.length && marcarPosicao());
+
+  function montarFaixa(lista) {
+    ensaio = lista;
+    faixa.replaceChildren(
+      ...lista.map((f, i) => {
+        const b = el('button', { type: 'button', 'aria-label': `Ampliar foto ${i + 1}: ${f.legenda}`, style: `aspect-ratio:${f.w}/${f.h};background:${f.cor}` }, [
+          // mesma conta de --faixa-h no CSS (o atributo sizes não aceita variáveis)
+          picture(f, `calc(min(520px, (100vw - 32px) / 1.5, 68vh) * ${(f.w / f.h).toFixed(4)})`, { loading: 'lazy', draggable: 'false' }),
+        ]);
+        b.onclick = () => abrir(i, ensaio);
+        return b;
+      })
+    );
+    faixa.scrollTo({ left: 0, behavior: 'instant' });
+    barra.max = Math.max(0, lista.length - 1);
+    marcarPosicao();
+  }
+
+  if (cfg.ensaio) {
+    fetch('/api/ensaio')
+      .then((r) => r.json())
+      .then((lista) => {
+        if (!lista.length) return;
+        const albuns = (cfg.ensaio.albuns || []).map((a) => ({ nome: a.nome, tem: noIntervalo(a.fotos) }));
+        const todas = lista.map((f) => {
+          const n = Number(f.id.slice(-3));
+          return { ...f, n, video: false, src: reserva(f), legenda: albuns.find((a) => a.tem(n))?.nome || cfg.ensaio.titulo };
+        });
+        const opcoes = [
+          { nome: 'Todas', fotos: todas },
+          ...albuns.map((a) => ({ nome: a.nome, fotos: todas.filter((f) => a.tem(f.n)).map((f) => ({ ...f, legenda: a.nome })) })),
+        ].filter((o) => o.fotos.length);
+
+        let escolhida = opcoes[0];
+        const chips = opcoes.map((o) => {
+          const b = el('button', { type: 'button', class: 'chip' }, [o.nome, el('span', { text: String(o.fotos.length) })]);
+          b.onclick = () => escolher(o);
+          return b;
+        });
+        function escolher(o) {
+          escolhida = o;
+          chips.forEach((c, i) => c.setAttribute('aria-pressed', String(opcoes[i] === o)));
+          $('#ensaio-todas').textContent = `Ver as ${o.fotos.length} juntas`;
+          montarFaixa(o.fotos);
+        }
+        $('#ensaio-titulo').textContent = cfg.ensaio.titulo;
+        $('#ensaio-texto').textContent = cfg.ensaio.texto || '';
+        $('#ensaio-albuns').append(...chips);
+        $('#ensaio-todas').onclick = () => abrirAlbum(escolhida === opcoes[0] ? cfg.ensaio.titulo : escolhida.nome);
+        $('#ensaio').hidden = false;
+        escolher(opcoes[0]);
+      });
+  }
 
   // ---------- Helpers de formulário ----------
   function msg(form, texto, tipo) {

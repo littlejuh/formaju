@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 3000;
 const DATA_DIR = process.env.RAILWAY_VOLUME_MOUNT_PATH || process.env.DATA_DIR || path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
 const FOTOS_DIR = path.join(__dirname, 'public', 'fotos');
+const ENSAIO_DIR = path.join(__dirname, 'public', 'ensaio');
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'formatura2027';
 
 if (!process.env.ADMIN_PASSWORD) {
@@ -83,6 +84,8 @@ function resumo() {
 const app = express();
 app.set('trust proxy', 1);
 app.use(express.json({ limit: '20kb' }));
+// Fotos do ensaio não mudam depois de geradas: o navegador pode guardar por bastante tempo
+app.use('/ensaio', express.static(ENSAIO_DIR, { maxAge: '30d', setHeaders: (res, f) => f.endsWith('.json') && res.setHeader('Cache-Control', 'no-cache') }));
 app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
 
 // Confirmação de presença
@@ -157,6 +160,15 @@ app.get('/api/fotos', (req, res) => {
       legenda: path.parse(f).name.replace(/^\d+[-_ ]*/, '').replace(/[-_]+/g, ' '),
     }))
   );
+});
+
+// Ensaio: lista gerada por "npm run ensaio" + se há original em alta para baixar
+app.get('/api/ensaio', (req, res) => {
+  let fotos = [];
+  try {
+    fotos = JSON.parse(fs.readFileSync(path.join(ENSAIO_DIR, 'fotos.json'), 'utf8'));
+  } catch {}
+  res.json(fotos.map((f) => ({ ...f, original: fs.existsSync(path.join(ENSAIO_DIR, 'originais', f.id + '.jpg')) })));
 });
 
 // ---------- Admin ----------

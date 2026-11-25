@@ -136,6 +136,25 @@
         <div id="tcc"></div>
         <div class="gallery" id="gallery"></div>
       </div>
+
+      <!-- Ensaio: carrossel (preenchido pelo app.js) -->
+      <div class="ensaio" id="ensaio" hidden>
+        <div class="container ensaio-topo">
+          <div>
+            <h3 id="ensaio-titulo"></h3>
+            <p id="ensaio-texto"></p>
+          </div>
+          <button class="btn btn-outline" type="button" id="ensaio-todas"></button>
+        </div>
+        <div class="container"><div class="ensaio-albuns" id="ensaio-albuns" role="group" aria-label="Álbuns do ensaio"></div></div>
+        <div class="ensaio-faixa" id="ensaio-faixa" role="group" aria-label="Fotos do ensaio"></div>
+        <div class="container ensaio-controles">
+          <button type="button" id="ensaio-prev" aria-label="Fotos anteriores">‹</button>
+          <input type="range" id="ensaio-barra" min="0" value="0" step="1" aria-label="Posição no carrossel">
+          <span class="mono" id="ensaio-contador"></span>
+          <button type="button" id="ensaio-next" aria-label="Próximas fotos">›</button>
+        </div>
+      </div>
     </section>
 
     <!-- INSPIRAÇÕES -->
@@ -184,10 +203,19 @@
     <a href="#inicio" class="footer-top">Voltar ao topo ↑</a>
   </footer>
 
+  <div class="album" id="album" hidden role="dialog" aria-modal="true" aria-labelledby="album-titulo">
+    <div class="album-topo">
+      <h2 id="album-titulo" tabindex="-1"></h2>
+      <button type="button" id="album-fechar" aria-label="Fechar álbum">×</button>
+    </div>
+    <div class="album-grade" id="album-grade"></div>
+  </div>
+
   <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Foto ampliada">
     <button class="lb-close" aria-label="Fechar">×</button>
     <button class="lb-prev" aria-label="Anterior">‹</button>
-    <figure><img alt=""><video controls playsinline hidden></video><figcaption></figcaption></figure>
+    <span class="lb-contador mono" aria-live="polite"></span>
+    <figure><picture><source type="image/avif"><img alt=""></picture><video controls playsinline hidden></video><figcaption></figcaption><a class="lb-original" hidden download>Baixar original</a></figure>
     <button class="lb-next" aria-label="Próxima">›</button>
   </div>
 

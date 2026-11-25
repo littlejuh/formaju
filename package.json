@@ -6,10 +6,16 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "ensaio": "node scripts/preparar-ensaio.js"
   },
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.5"
   }
 }
